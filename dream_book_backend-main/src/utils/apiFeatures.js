@@ -7,7 +7,11 @@ class APIFeatures {
     }
 
     filter() {
-        const queryObj = { ...this.queryString };
+        console.log("Filtering with query parameters:", this.queryString); // Debug log the query parameters
+
+        const queryObj = { ...this.queryString }; 
+        console.log("Constructed query object for filtering:", queryObj); // Debug log the constructed query object
+
         const excludedFields = ['page', 'sort', 'limit', 'fields'];
         excludedFields.forEach(el => delete queryObj[el]);
 
@@ -15,7 +19,9 @@ class APIFeatures {
         // 1B) Advanced Filtering
         let queryStr = JSON.stringify(convertedQuery);
         queryStr = queryStr.replace(/\b(gte|gt|lte|lt|nin|in|ne)\b/g, match => `$${match}`);
-        this.query = this.query.find(JSON.parse(queryStr));
+        this.query = this.query.find(JSON.parse(queryStr)); 
+        console.log("Final query after filtering:", this.query); // Debug log the final query
+
         return this;
     }
 

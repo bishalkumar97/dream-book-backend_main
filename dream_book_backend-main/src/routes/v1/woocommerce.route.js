@@ -7,10 +7,10 @@ const Order = require("../../models/Order"); // Import Order model
 router.get("/sync", async (req, res) => {
   try {
     await fetchOrders();
-    res.json({ success: true, message: "WooCommerce orders synced successfully!" });
+    res.json({ status: true, message: "WooCommerce orders synced successfully!" });
   } catch (error) {
     console.error("❌ Error syncing WooCommerce orders:", error);
-    res.status(500).json({ success: false, message: "Error syncing orders" });
+    res.status(500).json({ status: false, message: "Error syncing orders" });
   }
 });
 
@@ -23,12 +23,12 @@ router.get("/orders", async (req, res) => {
     console.log("📦 Orders Retrieved from DB:", JSON.stringify(orders, null, 2)); // ✅ NEW LOG
     if (!orders || orders.length === 0) {
       console.log("⚠️ No orders found in MongoDB.");
-      return res.status(404).json({ success: false, message: "No orders found" });
+      return res.status(404).json({ status: false, message: "No orders found" });
     }
-    res.json({ success: true, data: orders });
+    res.json({ status: true, data: orders });
   } catch (error) {
     console.error("❌ Error fetching orders:", error);
-    res.status(500).json({ success: false, message: "Error fetching orders" });
+    res.status(500).json({ status: false, message: "Error fetching orders" });
   }
 });
 // const express = require("express");

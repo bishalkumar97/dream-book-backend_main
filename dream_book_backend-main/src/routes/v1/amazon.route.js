@@ -6,10 +6,10 @@ const { fetchAmazonOrders } = require("../../services/amazon");
 router.get("/orders", async (req, res) => {
   try {
     const orders = await fetchAmazonOrders();
-    res.json({ success: true, data: orders });
+    res.json({ status: true, data: orders });
   } catch (error) {
     console.error("❌ Error fetching Amazon orders:", error);
-    res.status(500).json({ success: false, message: "Error fetching orders" });
+    res.status(500).json({ status: false, message: "Error fetching orders" });
   }
 });
 

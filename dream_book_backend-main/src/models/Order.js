@@ -23,6 +23,10 @@ const orderSchema = new mongoose.Schema({
   customer_id: Number,
   billing: Object,
   shipping: Object,
+  message: {
+    type: String,
+    default: ""
+  },
   line_items: [
     {
       name: String,

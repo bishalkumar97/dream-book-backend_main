@@ -4,6 +4,11 @@ const catchAsync = require('../utils/catchAsync');
 const { bookService } = require('../services');
 const { fileUploadService } = require('../microservices');
 
+const searchQuery = (search, field) => {
+    return [{ [field]: { $regex: search, $options: 'i' } }];
+  };
+  
+
 const addBook = catchAsync(async (req, res) => {
     if (req.body.platforms) {
         req.body.platforms = JSON.parse(req.body.platforms);
@@ -20,7 +25,11 @@ const addBook = catchAsync(async (req, res) => {
 });
 
 const getAllBooks = catchAsync(async (req, res) => {
-    const user = req.user;
+    console.log("Final query object:", req.query); // Debug log the final query object
+
+    console.log("req.user:", req.user); // Debug log
+    const user = req.user || {};
+    // const user = req.user;
     const populateConfig = [
         { path: "author", select: "_id name email" }
     ]
@@ -29,11 +38,13 @@ const getAllBooks = catchAsync(async (req, res) => {
     }
     if (req.query.search) {
         let search = req.query.search;
+        console.log("Search term:", search); // Debug log the search term
         delete req.query.search;
         let qStringTitile = searchQuery(search, "title");
         let qStringSubTitle = searchQuery(search, "subtitle");
         let qStringIsbnNumber = searchQuery(search, "isbnNumber");
-        req.query = { ...req.query, $or: qStringTitile.concat(qStringSubTitle).concat(qStringIsbnNumber) }
+        req.query = { ...req.query, $or: qStringTitile.concat(qStringSubTitle).concat(qStringIsbnNumber) };
+        console.log("Constructed query object:", req.query); // Log the constructed query
     }
     if (user.role === "author") {
         req.query.author = user._id

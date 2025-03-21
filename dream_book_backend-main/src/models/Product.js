@@ -58,6 +58,10 @@ country_of_origin: String,
 packer: String,
 generic_name: String,
 unspsc_code: String,
+message: {
+  type: String,
+  default: ""
+},
 
   source: { type: String, enum: ["woocommerce", "amazon", "kindle", "custom"], required: true }
 }, { timestamps: true });

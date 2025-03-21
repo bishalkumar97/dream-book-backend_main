@@ -343,7 +343,11 @@ const fetchProducts = async () => {
             images: product.images.map(img => ({ src: img.src })),
             categories: product.categories.map(cat => ({ id: cat.id, name: cat.name })),
             date_modified: product.date_modified,
-            source: "woocommerce"
+            source: "woocommerce",
+            message: {
+              type: String,
+              default: ""
+            }
           },
           { upsert: true }
         );
@@ -412,7 +416,12 @@ const fetchOrders = async () => {
             total: order.total,
             date_created: order.date_created,
             source: "woocommerce",
-            line_items: mappedLineItems
+            line_items: mappedLineItems,
+            // message: {
+            //   type: String,
+            //   default: ""
+            // }
+            message: "" // Correct: a string value
           },
           { upsert: true }
         );

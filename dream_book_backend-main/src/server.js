@@ -50,7 +50,7 @@ app.get("/api/dashboard", async (req, res) => {
     const topRatedAuthors = await computeTopRatedAuthors();
 
     return res.json({
-      success: true,
+      status: true,
       data: {
         platformEarnings: `₹${platformEarnings.toFixed(2)}`,
         totalRoyalty: `₹${totalRoyalty.toFixed(2)}`,
@@ -60,10 +60,15 @@ app.get("/api/dashboard", async (req, res) => {
         salesReport,
         topRatedAuthors,
       },
+      // message: "Your custom message here", // new field added
+      message: {
+        type: String,
+        default: ""
+      }
     });
   } catch (error) {
     logger.error("❌ Error building dashboard data:", error);
-    res.status(500).json({ success: false, message: "Error building dashboard data" });
+    res.status(500).json({ status: false, message: "Error building dashboard data" });
   }
 });
 
@@ -71,10 +76,10 @@ app.get("/api/dashboard", async (req, res) => {
 app.get("/api/orders", async (req, res) => {
   try {
     const orders = await Order.find().sort({ date_created: -1 });
-    res.json({ success: true, data: orders });
+    res.json({ status: true, data: orders });
   } catch (error) {
     logger.error("❌ Error fetching orders:", error);
-    res.status(500).json({ success: false, message: "Error fetching orders" });
+    res.status(500).json({ status: false, message: "Error fetching orders" });
   }
 });
 

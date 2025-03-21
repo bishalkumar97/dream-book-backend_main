@@ -534,6 +534,7 @@ const saveAmazonOrders = async (orders) => {
           currency: order.OrderTotal?.CurrencyCode || "USD",
           date_created: order.PurchaseDate,
           line_items: lineItems,
+          message: "",
           source: "amazon"
         },
         { upsert: true }
@@ -699,6 +700,7 @@ const fetchAmazonProducts = async () => {
             pages: product.attributes?.pages?.[0]?.value || 0,
             item_weight: product.attributes?.item_weight?.[0]?.value || "",
             dimensions: product.attributes?.dimensions?.[0]?.value || "",
+            message: "",
             source: "amazon"
 
           },

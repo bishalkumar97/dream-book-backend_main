@@ -16,7 +16,7 @@ router.post(
 
 router.get(
     '/',
-    firebaseAuth('All'),
+    // firebaseAuth('All'),
     bookController.getAllBooks
 );
 

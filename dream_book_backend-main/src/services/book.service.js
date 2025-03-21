@@ -13,6 +13,7 @@ async function getBookById(id) {
     return await Book.findById(id).populate({ path: "author" });
 }
 
+
 // async function updateUserById(id, newDetails, profileImage = null) {
 //   const user = await User.findById(id);
 //   userValidator(user);
@@ -29,10 +30,31 @@ async function deleteBook(id, newDetails) {
     return await Book.findByIdAndDelete(id);
 }
 
+// async function getAllBooks(query, populateConfig) {
+//     const data = await getAllData(Book, query, populateConfig)
+//     return data;
+// }
+
 async function getAllBooks(query, populateConfig) {
-    const data = await getAllData(Book, query, populateConfig)
+    console.log("Received query for fetching books:", query); // Debug log the received query
+
+    // If a search parameter is provided, add a regex search to the query.
+    if (query.search) {
+        const searchRegex = new RegExp(query.search, 'i'); // case-insensitive search
+        console.log("Constructed search regex:", searchRegex); // Debug log the constructed regex
+
+        query.$or = [
+            { title: { $regex: searchRegex } },
+            { author: { $regex: searchRegex } },
+            { description: { $regex: searchRegex } }
+        ];
+        // Optionally, remove the search field so it doesn't interfere later
+        delete query.search;
+    }
+    const data = await getAllData(Book, query, populateConfig);
     return data;
 }
+
 
 module.exports = {
     addBook,
