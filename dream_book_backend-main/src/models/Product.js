@@ -63,7 +63,12 @@ message: {
   default: ""
 },
 
-  source: { type: String, enum: ["woocommerce", "amazon", "kindle", "custom"], required: true }
+  source: { type: String, enum: ["woocommerce", "amazon", "kindle", "custom"], required: true },
+  status: {
+    type: String,
+    enum: ['Verified', 'Pending', 'Declined'], // allowed statuses
+    default: 'Pending' // default value is Pending
+  }
 }, { timestamps: true });
 
 module.exports = mongoose.model("Product", productSchema);

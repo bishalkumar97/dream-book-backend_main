@@ -9,7 +9,12 @@ const { authController } = require('../../controllers');
 
 const router = express.Router();
 
-router.post('/login', firebaseAuth('All'), authController.loginUser);
+// // Example: GET /api/authors?search=Faiq
+// router.get('/', authController.getAllAuthors);
+
+router.post('/login', 
+  firebaseAuth('All'), 
+  authController.loginUser);
 
 router.post(
   '/register',
@@ -36,5 +41,10 @@ router.post(
 );
 
 router.post("/generate-token/:uid", generateToken);
+
+// // At the bottom of your file, after mounting other routes
+// const authorRoutes = require('./routes/v1/auth.route'); // Check this path!
+// app.use('/api/authors', authorRoutes);
+
 
 module.exports = router;

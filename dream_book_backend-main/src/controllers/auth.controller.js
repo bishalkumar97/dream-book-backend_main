@@ -77,9 +77,50 @@ const addEmployee = catchAsync(async (req, res) => {
   res.status(200).send({ status: true, message: "Author added successfully", data: author });
 });
 
+// FIX HERE NEW: New function to fetch authors using a search query
+// const getAllAuthorsController = catchAsync(async (req, res) => {
+//   // You can add any population config if needed. For now, we pass an empty array.
+//   const populateConfig = [];
+//   const authors = await getAllAuthors(req.query, populateConfig);
+//   res.status(200).json({
+//     status: true,
+//     message: "All authors retrieved successfully",
+//     data: authors,
+//   });
+// });
+
+// NEW: Function to get all authors based on a search query.
+// const getAllAuthorsController = catchAsync(async (req, res) => {
+//   // Define any population configuration if needed (or pass an empty array)
+//   const populateConfig = [];
+//   // Assuming you have a service function to get authors
+//   // If you don't have an authorService, you might use a generic one.
+//   const authors = await authorService.getAllAuthors(req.query, populateConfig);
+//   res.status(200).json({
+//     status: true,
+//     message: "All authors retrieved successfully",
+//     data: authors,
+//   });
+// });
+
+
+// NEW: Function to fetch all authors with search filtering.
+const getAllAuthors = catchAsync(async (req, res) => {
+  // Optionally, set up any population configuration if needed.
+  const populateConfig = [];
+  // Call the service function to fetch authors based on req.query.
+  const authors = await authorService.getAllAuthors(req.query, populateConfig);
+  res.status(200).json({
+    status: true,
+    message: "All authors retrieved successfully",
+    data: authors,
+  });
+});
+
 module.exports = {
   loginUser,
   registerUser,
   addAuthor,
-  addEmployee
+  addEmployee,
+  getAllAuthors,
 };

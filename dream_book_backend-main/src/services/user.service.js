@@ -9,11 +9,6 @@ const userValidator = user => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found.');
   }
-  // else if (user.isDeleted) {
-  //   throw new ApiError(httpStatus.FORBIDDEN, 'User account has been deleted.');
-  // } else if (user.isBlocked) {
-  //   throw new ApiError(httpStatus.FORBIDDEN, 'User has been blocked.');
-  // }
 };
 
 async function getUserById(id) {
@@ -21,7 +16,24 @@ async function getUserById(id) {
   return user;
 }
 
+// async function getUsers(filters, options) {
+//   return await User.paginate(filters, options);
+// }
+
+// FIX HERE NEW: Updated getUsers function to support a search query parameter.
 async function getUsers(filters, options) {
+  // Check if a search query parameter exists
+  if (filters && filters.search) { // FIX HERE NEW
+    const searchStr = filters.search.trim();
+    const searchRegex = new RegExp(filters.search, 'i'); // FIX HERE NEW
+    // Apply search on multiple fields: name and email (add more if necessary) // FIX HERE NEW
+    filters.$or = [
+      { name: searchRegex },
+      { email: searchRegex }
+    ]; // FIX HERE NEW
+    // Remove the search key from filters so it doesn't interfere with other filters // FIX HERE NEW
+    delete filters.search; // FIX HERE NEW
+  }
   return await User.paginate(filters, options);
 }
 
@@ -69,10 +81,37 @@ async function updatePreferencesById(id, newPrefs) {
   return user;
 }
 
+// async function getAllUsers(query, populateConfig) {
+//   const data = await getAllData(User, query, populateConfig)
+//   return data;
+// }
+
 async function getAllUsers(query, populateConfig) {
-  const data = await getAllData(User, query, populateConfig)
+  // FIX HERE NEW: Add search filter if query.search exists
+  if (query && query.search) { // FIX HERE NEW
+    const searchStr = query.search.trim();
+    const searchRegex = new RegExp(query.search, 'i'); // FIX HERE NEW
+    query.$or = [ // FIX HERE NEW
+      { name: searchRegex }, // FIX HERE NEW
+      { email: searchRegex } // FIX HERE NEW
+    ]; // FIX HERE NEW
+    delete query.search; // FIX HERE NEW
+  }
+
+  // FIX HERE NEW: Handle status filter
+  // If 'status' is provided and is not 'All', we filter by that status
+  if (query && query.status && query.status !== 'All') { // FIX HERE NEW
+    query.status = query.status.trim(); // optional trim
+  } else if (query && query.status === 'All') {
+    delete query.status; // remove status from query to get all
+  }
+
+  console.log("Final query passed to getAllData:", query); // FIX HERE NEW: Debug log
+  const data = await getAllData(User, query, populateConfig);
   return data;
 }
+
+
 
 module.exports = {
   getUsers,

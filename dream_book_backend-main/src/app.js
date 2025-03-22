@@ -54,10 +54,19 @@ app.use('/v1', routes);
 // NEW LINE ADDED: Connect API Routes
 app.use("/api", routes);
 
+// Mount the author routes BEFORE the 404 handler
+// const authorRoutes = require('./routes/v1/auth.route');
+// app.use('/api/authors', authorRoutes);
+
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {
   next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
 });
+
+// In app.js
+// const authorRoutes = require('./routes/v1/author.route'); // Adjust path as needed
+// app.use('/api/authors', authorRoutes);
+
 
 // convert error to ApiError, if needed
 app.use(errorConverter);

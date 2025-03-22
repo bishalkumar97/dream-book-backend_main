@@ -46,9 +46,22 @@ const getAllBooks = catchAsync(async (req, res) => {
         req.query = { ...req.query, $or: qStringTitile.concat(qStringSubTitle).concat(qStringIsbnNumber) };
         console.log("Constructed query object:", req.query); // Log the constructed query
     }
+
+    // FIX HERE NEW: Process the status filter if provided
+    if (req.query.status) {
+        req.query.status = req.query.status.trim();
+        if (req.query.status === "All") {  // If status is 'All', remove the filter
+            delete req.query.status;
+        }
+    }
+
     if (user.role === "author") {
         req.query.author = user._id
     }
+
+    // FIX HERE NEW: Extract sort parameter (oldToNew / newToOld)
+  const sortParam = req.query.sort || null; // e.g. "oldToNew" or "newToOld"
+  
     const books = await bookService.getAllBooks(req.query, populateConfig)
 
     res.status(200).json({

@@ -3,27 +3,70 @@ const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { userService } = require('../services');
 
+
+const searchQuery = (search, field) => {
+  return [{ [field]: { $regex: search, $options: 'i' } }];
+};
+
+// const getAllUsers = catchAsync(async (req, res) => {
+//   const populateConfig = [
+//   ]
+//   if (req.query.search === '') {
+//     delete req.query.search;
+//   }
+//   if (req.query.search) {
+//     let search = req.query.search;
+//     delete req.query.search;
+//     let qStringName = searchQuery(search, "name");
+//     let qStringEmail = searchQuery(search, "email");
+//     req.query = { ...req.query, $or: qStringName.concat(qStringEmail) }
+//   }
+//   const users = await userService.getAllUsers(req.query, populateConfig)
+
+//   res.status(200).json({
+//     status: true,
+//     message: 'All users',
+//     data: users
+//   })
+// })
+
 const getAllUsers = catchAsync(async (req, res) => {
-  const populateConfig = [
-  ]
-  if (req.query.search === '') {
-    delete req.query.search;
+  const populateConfig = [];
+  // Trim search string to remove unwanted whitespace/newlines
+  if (req.query.search) {
+    req.query.search = req.query.search.trim(); // FIX HERE NEW
+    if (req.query.search === '') {
+      delete req.query.search;
+    }
   }
   if (req.query.search) {
     let search = req.query.search;
     delete req.query.search;
     let qStringName = searchQuery(search, "name");
     let qStringEmail = searchQuery(search, "email");
-    req.query = { ...req.query, $or: qStringName.concat(qStringEmail) }
+    req.query = { ...req.query, $or: qStringName.concat(qStringEmail) };
   }
-  const users = await userService.getAllUsers(req.query, populateConfig)
-
+  console.log("Controller Query:", req.query); // FIX HERE NEW: Debug log
+  const users = await userService.getAllUsers(req.query, populateConfig);
+  console.log("Users Returned:", users); // FIX HERE NEW: Debug log
   res.status(200).json({
     status: true,
     message: 'All users',
     data: users
-  })
-})
+  });
+});
+
+const updateUserStatus = catchAsync(async (req, res) => {
+  const { status } = req.body;
+  const updatedUser = await userService.updateUserStatus(req.params.id, status);
+  res.status(200).json({
+    status: true,
+    message: `User status updated to ${status}`,
+    data: updatedUser,
+  });
+});
+
+
 
 const getUserById = catchAsync(async (req, res) => {
   const user = await userService.getUserById(req.params.id);
@@ -86,5 +129,6 @@ module.exports = {
   getMe,
   blockUnblockUser,
   updateAuthor,
-  updateEmployee
+  updateEmployee,
+  updateUserStatus
 };

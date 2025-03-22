@@ -51,8 +51,42 @@ async function getAllBooks(query, populateConfig) {
         // Optionally, remove the search field so it doesn't interfere later
         delete query.search;
     }
+    // FIX HERE NEW: Handle status filtering.
+    if (query.status) {
+        query.status = query.status.trim();
+        if(query.status === "All") { // If status is "All", remove the filter.
+            delete query.status;
+        }
+    }
+
+     // If you also handle status, it might look like:
+  // if (query.status === "All") { delete query.status; }
+
+  // FIX HERE NEW: Build the sort object based on the sortParam
+  let sort = {};
+  if (sortParam === 'oldToNew') {          // If user wants oldest first
+    sort = { createdAt: 1 };              // Ascending by createdAt
+  } else if (sortParam === 'newToOld') {   // If user wants newest first
+    sort = { createdAt: -1 };             // Descending by createdAt
+  }
+
     const data = await getAllData(Book, query, populateConfig);
     return data;
+}
+
+// FIX HERE NEW: New service function to update only the book's status.
+async function updateBookStatus(id, newStatus) {
+    const book = await Book.findById(id);
+    if (!book) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Book not found");
+    }
+    // Validate newStatus if needed
+    if (!["approved", "pending", "rejected"].includes(newStatus)) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Invalid status value");
+    }
+    book.status = newStatus;
+    await book.save();
+    return book;
 }
 
 

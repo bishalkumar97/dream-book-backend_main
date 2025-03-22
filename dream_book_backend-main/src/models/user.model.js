@@ -39,6 +39,12 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false
     },
+
+    status: {
+      type: String,
+      enum: ['Verified', 'Pending', 'Declined'], // Allowed values
+      default: 'Pending' // Default status
+    }
   },
   { timestamps: true }
 );
