@@ -6,18 +6,21 @@ const productSchema = new mongoose.Schema({
   asin: { type: String, unique: true, sparse: true }, // NEW_CHANGE
   name: String,
   price: String,
-  description: String,
+
+  // description: String,
+  description: { type: String, default: "Incomplete product data" },
+
   short_description: String,
   sku: String,
   stock_quantity: Number,
   images: [{ src: String }],
   categories: [{ id: Number, name: String }],
-
   title: String,
 
   // NEW_CHANGE: Additional fields for Amazon attributes
   author_name: { type: String, default: "Unknown" }, // NEW_CHANGE
   publisher: { type: String, default: "" },          // NEW_CHANGE
+
   description: { type: String, default: "Incomplete product data" }, // NEW_CHANGE
 
   // For dimension/weight/binding
@@ -42,28 +45,54 @@ const productSchema = new mongoose.Schema({
     unspsc_code: { type: String, default: "" }, // NEW_CHANGE
 
   // Add platforms as an array of objects { platform: String, royalty: Number }
-  platforms: [{
-    platform: { type: String },
-    royalty: { type: Number }
-  }],
+  // platforms: [{
+  //   platform: { type: String },
+  //   royalty: { type: Number }
+  // }],
 // Other fields
+
 date_modified: String,
 created_date: String,
-author_name: String,
-publisher: String,
-pages: Number,
+
+
+// author_name: String,
+// publisher: String,
+
+ // FIX HERE NEW: Additional fields for Amazon attributes
+ author_name: { type: String, default: "Unknown" },
+ publisher: { type: String, default: "" },
+
+// pages: Number,
+// For dimension/weight/binding
+pages: { type: Number, default: 0 },
+item_weight: { type: String, default: "" },  // e.g., "0.4 kilograms"
+dimensions: { type: String, default: "" },   // e.g., "22 x 15 x 3 cm"
+bindingSize: [{ type: String }], 
+
 item_weight: String,
 dimensions: String,
 country_of_origin: String,
 packer: String,
 generic_name: String,
-unspsc_code: String,
+// unspsc_code: String,
+
+unspsc_code: { type: String, default: "" },
+
 message: {
   type: String,
   default: ""
 },
 
-  source: { type: String, enum: ["woocommerce", "amazon", "kindle", "custom"], required: true },
+  // source: { type: String, enum: ["woocommerce", "amazon", "kindle", "custom"], required: true },
+
+    // FIX HERE NEW: Remove "platforms" field and use only "source" for product origin
+  // Old platforms field removed.
+  source: { 
+    type: String, 
+    enum: ["woocommerce", "amazon", "kindle", "custom"], 
+    required: true 
+  },
+
   status: {
     type: String,
     enum: ['Verified', 'Pending', 'Declined'], // allowed statuses

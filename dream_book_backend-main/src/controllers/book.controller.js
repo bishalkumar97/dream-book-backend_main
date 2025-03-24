@@ -17,7 +17,9 @@ const addBook = catchAsync(async (req, res) => {
         const [coverImage] = await fileUploadService.s3Upload([req.file], 'coverImages').catch(err => {
             throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Failed to upload profile picture');
         });
-        let book = await bookService.addBook({ ...req.body, coverImage })
+        // let book = await bookService.addBook({ ...req.body, coverImage })
+        let book = await bookService.addBook({ ...req.body, coverImage, source: req.body.source || "manual" })
+
         return res.status(200).send({ status: true, message: "Book added successfully", data: book });
     } else {
         return res.status(400).json({ status: false, message: "Please pass cover image" })
@@ -47,12 +49,31 @@ const getAllBooks = catchAsync(async (req, res) => {
         console.log("Constructed query object:", req.query); // Log the constructed query
     }
 
+    
+
     // FIX HERE NEW: Process the status filter if provided
-    if (req.query.status) {
+    // if (req.query.status) {
+    //     req.query.status = req.query.status.trim();
+    //     if (req.query.status === "All") {  // If status is 'All', remove the filter
+    //         delete req.query.status;
+    //     }
+    // }
+
+     // ✅ FIX HERE: Handle status filter (All, approved, rejected, pending)
+     if (req.query.status) {
         req.query.status = req.query.status.trim();
-        if (req.query.status === "All") {  // If status is 'All', remove the filter
-            delete req.query.status;
+        if (req.query.status === "All") {  
+            delete req.query.status; // Remove status filter if 'All' is selected
         }
+    }
+
+    console.log("Sorting parameter received:", req.query.sort); // Debug log (Message 45)
+
+    // ✅ FIX HERE: Apply sorting by "oldToNew" or "newToOld"
+    if (req.query.sort === "oldToNew") {
+        req.query.sort = "createdAt"; // Sort by ascending order
+    } else if (req.query.sort === "newToOld") {
+        req.query.sort = "-createdAt"; // Sort by descending order
     }
 
     if (user.role === "author") {
@@ -63,12 +84,37 @@ const getAllBooks = catchAsync(async (req, res) => {
   const sortParam = req.query.sort || null; // e.g. "oldToNew" or "newToOld"
   
     const books = await bookService.getAllBooks(req.query, populateConfig)
+    console.log("Books fetched from service:", books); // Debug log
+    console.log("Type of books:", typeof books); // Debug type
+    console.log("Is books an array?", Array.isArray(books)); // Check if books is an array
+
+    // ✅ FIX: Ensure `books` is an array before calling `map()`
+    if (!Array.isArray(books)) {
+        return res.status(500).json({
+            status: false,
+            message: "Internal Server Error: books is not an array",
+            data: books
+        });
+    }
+    // res.status(200).json({
+    //     status: true,
+    //     message: 'All books',
+    //     data: books
+    // })
 
     res.status(200).json({
         status: true,
         message: 'All books',
-        data: books
+        data: books.map(book => ({
+            id: book._id,
+            title: book.title,
+            author: book.author,
+            source: book.source,  // ✅ Ensure source is included in the response
+            coverImage: book.coverImage,
+            platforms: book.platforms,
+        }))
     })
+    
 })
 
 const getBookById = catchAsync(async (req, res) => {
@@ -79,11 +125,25 @@ const getBookById = catchAsync(async (req, res) => {
             message: "Book not foud"
         })
     }
+    // return res.status(200).json({
+    //     status: true,
+    //     message: "Book details",
+    //     data: book
+    // })
+
     return res.status(200).json({
         status: true,
         message: "Book details",
-        data: book
+        data: {
+            id: book._id,
+            title: book.title,
+            author: book.author,
+            source: book.source,  // ✅ Ensure source is returned
+            coverImage: book.coverImage,
+            platforms: book.platforms,
+        }
     })
+    
 })
 
 const updateBookById = catchAsync(async (req, res) => {
@@ -103,7 +163,12 @@ const updateBookById = catchAsync(async (req, res) => {
     if (req.body.platforms) {
         req.body.platforms = JSON.parse(req.body.platforms);
     }
-    const updatedBook = await bookService.updateBookById(req.params.id, req.body);
+    // const updatedBook = await bookService.updateBookById(req.params.id, req.body);
+    const updatedBook = await bookService.updateBookById(req.params.id, {
+        ...bookData._doc,  // Preserve existing data
+        ...req.body,  // Update only the new fields
+        source: bookData.source  // ✅ Ensure source is not removed
+    });
     return res.status(200).json({
         status: true,
         message: "Book updated successfully",

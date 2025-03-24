@@ -75,7 +75,20 @@ app.get("/api/dashboard", async (req, res) => {
 // API endpoint to fetch orders
 app.get("/api/orders", async (req, res) => {
   try {
-    const orders = await Order.find().sort({ date_created: -1 });
+    // const orders = await Order.find().sort({ date_created: -1 });
+    // res.json({ status: true, data: orders });
+    const { source } = req.query; // Accept 'source' from query params
+
+    // let filter = {};
+    let filter = source ? { source } : {};
+    // if (source) filter.source = source; // Apply filter only if 'source' is provided
+    console.log("Fetching orders with filter:", filter); // Debugging log
+    const orders = await Order.find(filter).sort({ date_created: -1 });
+
+    if (orders.length === 0) {
+      return res.status(404).json({ status: false, message: "No orders found" });
+    }
+
     res.json({ status: true, data: orders });
   } catch (error) {
     logger.error("❌ Error fetching orders:", error);

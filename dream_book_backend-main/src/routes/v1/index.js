@@ -8,6 +8,7 @@ const bookRoute = require('./book.route');
 const woocommerceRoutes = require("./woocommerce.route"); // ✅ NEW LINE ADDED
 // const amazonRoutes = require('../../services/amazon');
 const amazonRoutes = require("./amazon.route"); // ✅ Correct Path
+const orderRoutes = require("./orders.route"); // ✅ Add this line
 
 
 
@@ -16,5 +17,6 @@ router.use('/users', userRoute);
 router.use('/books', bookRoute);
 router.use("/woocommerce", woocommerceRoutes);
 router.use("/amazon", amazonRoutes);
+router.use("/orders", orderRoutes); // ✅ Register orders route
 
 module.exports = router;

@@ -27,6 +27,8 @@ const orderSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
+    source: { type: String, enum: ["woocommerce", "amazon"], required: true },
+  // billing_source: { type: String, default: "" }, // Add this line
   line_items: [
     {
       name: String,
