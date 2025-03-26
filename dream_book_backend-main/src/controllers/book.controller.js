@@ -110,8 +110,18 @@ const getAllBooks = catchAsync(async (req, res) => {
             title: book.title,
             author: book.author,
             source: book.source,  // ✅ Ensure source is included in the response
+            // coverImage: book.coverImage,
+            // platforms: book.platforms,
+            isbnNumber: book.isbnNumber,
+            categories: book.categories,
             coverImage: book.coverImage,
+            bindingSize: book.bindingSize,
+            language: book.language,
+            price: book.price,
             platforms: book.platforms,
+            source: book.source,
+            status: book.status,
+            description: book.description
         }))
     })
     
@@ -135,12 +145,26 @@ const getBookById = catchAsync(async (req, res) => {
         status: true,
         message: "Book details",
         data: {
+            // id: book._id,
+            // title: book.title,
+            // author: book.author,
+            // source: book.source,  // ✅ Ensure source is returned
+            // coverImage: book.coverImage,
+            // platforms: book.platforms,
             id: book._id,
-            title: book.title,
-            author: book.author,
-            source: book.source,  // ✅ Ensure source is returned
-            coverImage: book.coverImage,
-            platforms: book.platforms,
+      title: book.title,
+      author: book.author,
+      subtitle: book.subtitle,
+      isbnNumber: book.isbnNumber,
+      categories: book.categories,
+      coverImage: book.coverImage,
+      bindingSize: book.bindingSize,
+      language: book.language,
+      price: book.price,
+      platforms: book.platforms,
+      source: book.source,
+      status: book.status,
+      description: book.description
         }
     })
     

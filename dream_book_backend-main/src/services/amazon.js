@@ -2,6 +2,8 @@
 const SellingPartnerAPI = require("amazon-sp-api");
 const Product = require("../models/Product");
 const Order = require("../models/Order");
+const { syncBookFromExternalSource } = require("./syncBookFromSource");
+
 
 const amazonRefreshToken = process.env.AMAZON_REFRESH_TOKEN;
 const amazonClientId = process.env.AMAZON_CLIENT_ID;
@@ -239,6 +241,15 @@ const fetchAmazonProducts = async () => {
           },
           { upsert: true }
         );
+
+        // ✅ Add this below to sync with Book collection
+await syncBookFromExternalSource({
+  id: asin,
+  title: product.summaries?.[0]?.itemName || "No title available",
+  price: price || "0",
+  description: product.attributes?.product_description?.[0]?.value || "No description available",
+  cover: product.images?.[0]?.images?.[0]?.link || ""
+}, "amazon");
 
         console.log(`✅ Amazon Product ID ${asin} saved/updated in MongoDB.`);
       } catch (error) {
