@@ -22,7 +22,7 @@ router.get(
 
 router.get(
     '/:id',
-    firebaseAuth('All'),
+    // firebaseAuth('All'),
     bookController.getBookById
 );
 
