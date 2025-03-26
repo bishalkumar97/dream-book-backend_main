@@ -188,11 +188,16 @@ const updateBookById = catchAsync(async (req, res) => {
         req.body.platforms = JSON.parse(req.body.platforms);
     }
     // const updatedBook = await bookService.updateBookById(req.params.id, req.body);
+    // const updatedBook = await bookService.updateBookById(req.params.id, {
+    //     ...bookData._doc,  // Preserve existing data
+    //     ...req.body,  // Update only the new fields
+    //     source: bookData.source  // ✅ Ensure source is not removed
+    // });
     const updatedBook = await bookService.updateBookById(req.params.id, {
-        ...bookData._doc,  // Preserve existing data
-        ...req.body,  // Update only the new fields
-        source: bookData.source  // ✅ Ensure source is not removed
-    });
+        ...book._doc,
+        ...req.body,
+        source: book.source
+      });
     return res.status(200).json({
         status: true,
         message: "Book updated successfully",
@@ -208,7 +213,8 @@ const deleteBookById = catchAsync(async (req, res) => {
             message: "Book not foud"
         })
     }
-    const deletedBook = await bookService.getBookById(req.params.id);
+    // const deletedBook = await bookService.getBookById(req.params.id);
+    await bookService.deleteBookById(req.params.id); // actual deletion
     return res.status(200).json({
         status: true,
         message: "Book deleted successfully",
