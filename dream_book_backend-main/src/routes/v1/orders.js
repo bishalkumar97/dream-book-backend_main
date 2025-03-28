@@ -8,11 +8,9 @@ router.get("/", async (req, res) => {
     let filter = source ? { source } : {};
 
     const orders = await Order.find(filter).sort({ createdAt: -1 }).lean();
+    console.log("✅ Orders fetched:", orders.length);
 
-    if (orders.length === 0) {
-      return res.status(404).json({ status: false, message: "No orders found" });
-    }
-
+    // ✅ Always return orders array, even if empty
     res.json({ status: true, data: orders });
   } catch (error) {
     console.error("❌ Error fetching orders:", error);
